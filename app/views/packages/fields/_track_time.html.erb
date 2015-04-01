@@ -35,22 +35,7 @@
           </div>
       <% end %>
     <% else %>
-      <%= form_tag(
-                 {:controller => 'toolbox', :action => 'log_work_done'},
-                 :remote => true,
-                 :loading => "Element.show('spinner_log_#{@package.id}');",
-                 :success => "Element.hide('spinner_log_#{@package.id}');
-             document.getElementById('work_time_col').value='';
-             ") do %>
-          <div style="text-align: left;">
-              <%= hidden_field_tag :package_id, @package.id %>
-              <%= hidden_field_tag :refresh_page, 'manual_tracked_time' %>
-              <input id="work_time_col" name="work_time">
-            (Example: 1w,2d,3h,4m)
-            <%= submit_tag 'Log' %>
-            <%= render :partial => 'layouts/progress_indicator', :locals => {:progress_indicator_id => "spinner_log_#{@package.id}"} %>
-          </div>
-      <% end %>
+        <%= render 'packages/fields/track_time_form_rails4' %>
     <% end %>
 </td>
 <% end %>

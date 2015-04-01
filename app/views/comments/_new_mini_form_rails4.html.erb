@@ -1,7 +1,6 @@
-<div id="comment_mini_form_<%= package.id %>">
-<% if Rails::VERSION::STRING < "4" %>
-  <% form_remote_tag(
-             :url => {:controller => 'comments', :action => 'create'},
+  <%= form_tag(
+             {:controller => 'comments', :action => 'create'},
+             :remote => true,
              :loading => "Element.show('spinner_comment_#{package.id}');",
              :success => "Element.hide('spinner_comment_#{package.id}');") do %>
 
@@ -26,7 +25,3 @@
         <%= render :partial => 'layouts/sep_tiny' %>
       </div>
   <% end %>
-<% else %>
-    <%= render 'comments/new_mini_form_rails4' %>
-<% end %>
-</div>

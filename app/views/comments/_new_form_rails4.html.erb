@@ -1,15 +1,6 @@
-<% package ||= @package %>
-<div id='send_comment'>
-
-  <% if package.comments.size > 0 %>
-      <div style="height:50px;clear:both;"></div>
-  <% end %>
-  <p>
-    Add Comment: <%= render :partial => 'layouts/syntax_help' %>
-  </p>
-  <% if Rails::VERSION::STRING < "4" %>
-    <% form_remote_tag(
-               :url => {:controller => 'comments', :action => 'create'},
+    <%= form_tag(
+               {:controller => 'comments', :action => 'create'},
+               :remote => true,
                :loading => "Element.show('spinner-comment');",
                :success => "Element.hide('spinner-comment');") do %>
 
@@ -30,7 +21,3 @@
         </table>
         <%= hidden_field_tag :package_id, package.id %>
     <% end %>
-  <% else %>
-      <%= render 'comments/new_form_rails4' %>
-  <% end %>
-</div>

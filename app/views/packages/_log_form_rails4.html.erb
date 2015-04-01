@@ -1,7 +1,6 @@
-<div id="log_form_<%= package.id %>">
-<% if Rails::VERSION::STRING < "4" %>
-  <% form_remote_tag(
-             :url => {:controller => 'toolbox', :action => 'log_work_done'},
+  <%= form_tag(
+             {:controller => 'toolbox', :action => 'log_work_done'},
+             :remote => true,
              :loading => "Element.show('spinner_log_#{package.id}');",
              :success => "Element.hide('spinner_log_#{package.id}');") do %>
       <%= hidden_field_tag :package_id, package.id %>
@@ -20,7 +19,3 @@
         <%= render :partial => 'layouts/sep_tiny' %>
       </div>
   <% end %>
-<% else %>
-    <%= render 'packages/log_form_rails4' %>
-<% end %>
-</div>

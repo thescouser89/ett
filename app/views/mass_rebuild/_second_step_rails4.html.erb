@@ -1,8 +1,4 @@
-<h2>Packages to Mass Rebuild</h2>
-<div style="height:20px;border:none;"></div>
-<div class='manage-tbl'>
-<% if Rails::VERSION::STRING < "4" %>
-    <% form_tag("/mass-rebuild/third-step", :method => "post") do %>
+    <%= form_tag("/mass-rebuild/third-step", :method => "post") do %>
             <% @packages.each do |package| %>
                 <input type="checkbox" name="packages[]" value="<%= package %>" checked><%= package %></input>
                 <br>
@@ -14,13 +10,9 @@
             <input type="hidden" name="type_build" value="<%= params[:type][:option] %>" />
             <input type="hidden" name="distros" value="<%= params[:distros].join(',') %>" />
             <input type="hidden" name="clentry" value="<%= params[:clentry] %>" />
-            <input type="hidden" name="task_id" value="<%= params[:task_id] %>" />
+
 
             <div style="height:20px;border:none;"></div>
             <input name="schedule" type="submit" value="Schedule!" />
 
     <% end %>
-<% else %>
-    <%= render 'mass_rebuild/second_step_rails4' %>
-<% end %>
-</div>
