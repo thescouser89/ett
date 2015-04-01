@@ -319,12 +319,25 @@ class Package < ActiveRecord::Base
     ans = ''
     begin
       Net::HTTP.start('mead.usersys.redhat.com') do |http|
-        resp = http.get("/mead-scheduler/rest/package/eap6/#{name}/shipped")
+        resp = http.get("/mead-scheduler/rest/package/#{self.task.prod}/#{name}/shipped")
         ans = resp.body
       end
       ans == 'YES'
     rescue
       true
+    end
+  end
+
+  def in_shipped_database?
+    ans = ''
+    begin
+      Net::HTTP.start('mead.usersys.redhat.com') do |http|
+        resp = http.get("/mead-scheduler/rest/package/#{self.task.prod}/#{name}/shipped")
+        ans = resp.body
+      end
+      !ans.include?("NO Package")
+    rescue
+      false
     end
   end
 
@@ -339,8 +352,10 @@ class Package < ActiveRecord::Base
     end
 
     if !in_shipped_list? && !not_shipped_tag.nil? && !self.tags.include?(not_shipped_tag)
-      self.tags << not_shipped_tag
-      self.save
+      if in_shipped_database?
+        self.tags << not_shipped_tag
+        self.save
+      end
     end
   end
 
@@ -741,7 +756,7 @@ class Package < ActiveRecord::Base
 
   def build_type
     Net::HTTP.get('mead.usersys.redhat.com',
-                  "/mead-scheduler/rest/package/eap6/#{self.name}/type")
+                  "/mead-scheduler/rest/package/#{self.task.prod}/#{self.name}/type")
   end
 
   # get_mead_info will go get the mead nvr from the rpm repo directly if it
@@ -793,7 +808,7 @@ class Package < ActiveRecord::Base
     ans = ''
     begin
       Net::HTTP.start('mead.usersys.redhat.com') do |http|
-        resp = http.get("/mead-scheduler/rest/package/eap6/#{name}/scl")
+        resp = http.get("/mead-scheduler/rest/package/#{self.task.prod}/#{name}/scl")
         ans = resp.body
       end
       ans == 'YES'
@@ -1101,5 +1116,4 @@ class Package < ActiveRecord::Base
       Changelog.package_deleted(self)
     end
   end
-
 end
