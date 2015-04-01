@@ -1116,4 +1116,5 @@ class Package < ActiveRecord::Base
       Changelog.package_deleted(self)
     end
   end
+
 end
