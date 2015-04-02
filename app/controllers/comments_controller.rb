@@ -3,13 +3,22 @@ class CommentsController < ApplicationController
 
   def create
 
-    @package = Package.find(params[:package_id])
-    @comment = @package.comments.create
-    @comment.comment = params[:comment].strip
-    @comment.created_at = Time.now
+    if Rails::VERSION::STRING < "4"
+      @comment = Comment.new
+      @comment.comment = params[:comment].strip
+      @comment.created_at = Time.now
+      @package = Package.find(params[:package_id])
+      dup_comment = Comment.find_by_comment_and_source(@comment.comment(:source),
+                                                       request.remote_ip)
+    else
+      @package = Package.find(params[:package_id])
+      @comment = @package.comments.create
+      @comment.comment = params[:comment].strip
+      @comment.created_at = Time.now
 
-    dup_comment = Comment.find_by_comment_and_source(@comment.comment,
-                                                     request.remote_ip)
+      dup_comment = Comment.find_by_comment_and_source(@comment.comment,
+                                                       request.remote_ip)
+    end
 
     if no_duplicate_comment(dup_comment)
       @comment.user_id = current_user.id if current_user
