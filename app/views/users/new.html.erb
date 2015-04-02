@@ -19,24 +19,7 @@
     <% end %>
   </div>
 <% else %>
-  <div class='manage-tbl'>
-    <%= form_for(@user) do |f| %>
-        <%= f.error_messages %>
-        <table>
-          <%= render :partial => 'users/fields/name', :locals => {:f => f} %>
-          <%= render :partial => 'users/fields/email', :locals => {:f => f} %>
-          <%= render :partial => 'users/fields/bugzilla_email', :locals => {:f => f} %>
-          <tr>
-            <td colspan=2 style="text-align:right;">
-              <%= f.submit 'Create' %>
-            </td>
-          </tr>
-        </table>
-        <p>
-
-        </p>
-    <% end %>
-  </div>
+    <%= render 'users/new_rails4' %>
 <% end %>
 <br>
 <%= link_to 'Back', users_path %>

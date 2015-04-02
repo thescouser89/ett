@@ -12,14 +12,5 @@
 	    </p>
 	<% end %>
 <% else %>
-	<%= form_for(@tag) do |f| %>
-	    <%= f.error_messages %>
-
-	    <%= render :partial => 'key', :locals => {:f => f} %>
-	    <%= render :partial => 'value', :locals => {:f => f} %>
-
-	    <p>
-	      <%= f.submit 'Update' %>
-	    </p>
-	<% end %>
+    <%= render 'tags/edit_rails4' %>
 <% end %>

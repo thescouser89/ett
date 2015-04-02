@@ -1,0 +1,11 @@
+	<%= form_for(@tag) do |f| %>
+	    <%= f.error_messages %>
+
+	    <%= render :partial => 'key', :locals => {:f => f} %>
+	    <%= render :partial => 'value', :locals => {:f => f} %>
+	    <%= render :partial => 'task_id', :locals => {:f => f} %>
+
+	    <p>
+	      <%= f.submit 'Create' %>
+	    </p>
+	<% end %>

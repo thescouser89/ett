@@ -37,44 +37,7 @@
 
   </div>
 <% else %>
-  <div class='manage-tbl'>
-    <%= form_for(@component) do |f| %>
-        <%= f.error_messages %>
-        <%= f.hidden_field :id, :value => @component.id %>
-        <table>
-          <tr>
-            <th>
-              <%= f.label :name %>
-            </th>
-          </tr>
-          <tr>
-            <td>
-              <%= f.text_field :name %>
-            </td>
-          </tr>
-        </table>
-
-        <%= render :partial => 'layouts/sep' %>
-
-        <table>
-          <tr>
-            <th>
-              Tags
-            </th>
-          </tr>
-          <tr>
-            <td style="text-align: left;">
-              <%= render :partial => 'components/fields/tasks' %>
-            </td>
-          </tr>
-        </table>
-
-        <p>
-          <%= f.submit 'Update' %>
-        </p>
-    <% end %>
-
-  </div>
+    <%= render 'components/edit_rails4' %>
 <% end %>
 
 <%= link_to 'Back', components_path %>

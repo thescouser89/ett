@@ -1,0 +1,19 @@
+      <%= form_for PAttachment.new, :html => {:multipart => true} do |f| %>
+          <%= f.hidden_field :package_id, :value => @package.id %>
+          <p>
+            Add Attachment:
+          </p>
+
+          <p>
+            <%= f.file_field :attachment %>
+          </p>
+          <%= render :partial => 'layouts/notification',
+                     :locals => {:title => 'Notify the attachment uploading to:',
+                                 :div_id => 'attachment'} %>
+          <p>
+            <%= f.submit 'Upload' %>
+            <%= render :partial => 'layouts/notification_link',
+                       :locals => {:div_id => 'attachment'} %>
+          </p>
+
+      <% end %>

@@ -1,0 +1,16 @@
+  <div class='manage-tbl'>
+    <%= form_for(@task) do |f| %>
+        <%= f.error_messages %>
+        <table>
+          <%= render :partial => 'tasks/fields/name', :locals => {:f => f} %>
+          <!-- add any new fields in the options partial so that it can be shared -->
+          <%= render :partial => 'tasks/options', :locals => {:f => f} %>
+          <%= render :partial => 'tasks/fields/task_group', :locals => {:f => f} %>
+          <tr>
+            <td colspan='2'>
+              <%= f.submit 'Create' %>
+            </td>
+          </tr>
+        </table>
+    <% end %>
+  </div>

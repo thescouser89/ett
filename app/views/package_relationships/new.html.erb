@@ -20,25 +20,7 @@
       </p>
   <% end %>
 <% else %>
-  <%= form_for(@package_relationship) do |f| %>
-      <%= f.error_messages %>
-
-      <p>
-        <%= f.label :from_package_id %><br/>
-        <%= f.text_field :from_package_id %>
-      </p>
-      <p>
-        <%= f.label :to_package_id %><br/>
-        <%= f.text_field :to_package_id %>
-      </p>
-      <p>
-        <%= f.label :relationship_id %><br/>
-        <%= f.text_field :relationship_id %>
-      </p>
-      <p>
-        <%= f.submit 'Create' %>
-      </p>
-  <% end %>
+    <%= render 'package_relationships/new_rails4' %>
 <% end %>
 
 <%= link_to 'Back', package_relationships_path %>

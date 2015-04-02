@@ -1,0 +1,17 @@
+  <div class='manage-tbl'>
+  <%= form_for(@cronjob_mode) do |f| %>
+    <%= f.error_messages %>
+
+    <p>
+      <%= f.label :mode %><br />
+      <%= f.text_field :mode %>
+    </p>
+    <p>
+      <%= f.label :description %><br />
+      <%= f.text_field :description %>
+    </p>
+    <p>
+      <%= f.submit 'Update' %>
+    </p>
+  <% end %>
+  </div>

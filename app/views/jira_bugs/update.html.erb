@@ -8,12 +8,5 @@
 	  </table>
   <% end %>
 <% else %>
-  <%= form_for :jira_bug, @jira_bug, :url => { :action => "create" } do |f| %>
-	  <table>
-		  <tr><td>Summary:</td>
-		  <td><%= f.text_field :summary %></td></tr>
-		  <tr><td>Priority:</td>
-		  <td><%= f.text_field :priority%></td></tr>
-	  </table>
-  <% end %>
+    <%= render 'jira_bugs/update_rails4' %>
 <% end %>

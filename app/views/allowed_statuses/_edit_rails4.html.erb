@@ -1,0 +1,19 @@
+  <%= form_for(@allowed_status) do |f| %>
+    <%= f.error_messages %>
+
+    <p>
+      <%= f.label :workflow_id %><br />
+      <%= f.text_field :workflow_id %>
+    </p>
+    <p>
+      <%= f.label :status_id %><br />
+      <%= f.text_field :status_id %>
+    </p>
+    <p>
+      <%= f.label :next_statuses %><br />
+      <%= f.text_area :next_statuses %>
+    </p>
+    <p>
+      <%= f.submit 'Update' %>
+    </p>
+  <% end %>
