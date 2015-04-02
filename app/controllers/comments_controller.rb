@@ -23,7 +23,11 @@ class CommentsController < ApplicationController
     if no_duplicate_comment(dup_comment)
       @comment.user_id = current_user.id if current_user
       @comment.source = request.remote_ip
-      @comment.save
+      if Rails::VERSION::STRING < "4"
+        @package.add_comment(@comment)
+      else
+        @comment.save
+      end
 
       if Rails.env.production?
         notify_users_of_comment(@package, @comment, params)
