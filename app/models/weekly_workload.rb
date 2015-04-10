@@ -1,7 +1,13 @@
 class WeeklyWorkload < ActiveRecord::Base
-  has_many :package_stats, :class_name => 'PackageStat',
-           :foreign_key => 'weekly_workload_id', :dependent => :destroy,
-           :order => 'user_id'
+  if Rails::VERSION::STRING < "4"
+    has_many :package_stats, :class_name => 'PackageStat',
+             :foreign_key => 'weekly_workload_id', :dependent => :destroy,
+             :order => 'user_id'
+  else
+    has_many :package_stats, -> {order 'user_id'}, :class_name => 'PackageStat',
+             :foreign_key => 'weekly_workload_id', :dependent => :destroy
+  end
+
   has_many :auto_sum_details, :class_name => 'AutoSumDetail',
            :foreign_key => 'weekly_workload_id', :dependent => :destroy
   belongs_to :task
