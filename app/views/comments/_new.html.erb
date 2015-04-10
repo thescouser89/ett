@@ -31,6 +31,6 @@
         <%= hidden_field_tag :package_id, package.id %>
     <% end %>
   <% else %>
-      <%= render 'comments/new_form_rails4' %>
+      <%= render 'comments/new_form_rails4', {:package => package} %>
   <% end %>
 </div>
