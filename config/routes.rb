@@ -156,6 +156,7 @@ Rails.application.routes.draw do
   resources :jira_bugs
   resources :changelogs
   resources :components
+  resources :packages
   resources :package_relationships
   resources :relationships
   resources :settings
@@ -179,12 +180,12 @@ Rails.application.routes.draw do
   resources :users do
    resources :packages, :user_views
   end
-  
+
   resources :user_views
   resources :import
   resources :comments
   resources :bz_bugs
-  
+
   # ============================================================================
   # TODO: verify that those changes are valid
   # ============================================================================
@@ -199,8 +200,8 @@ Rails.application.routes.draw do
   get 'errata_check/sync_rpmdiffs' => 'errata_check#sync_rpmdiffs'
   get 'cronjob/products_to_build' => 'cronjob_modes#products_to_build'
   get 'mass-rebuild/first-step' => 'mass_rebuild#first_step'
-  get 'mass-rebuild/second-step' => 'mass_rebuild#second_step'
-  get 'mass-rebuild/third-step' => 'mass_rebuild#third_step'
+  post 'mass-rebuild/second-step' => 'mass_rebuild#second_step'
+  post 'mass-rebuild/third-step' => 'mass_rebuild#third_step'
   get 'mass-rebuild/fourth-step' => 'mass_rebuild#fourth_step'
   match ':controller(/:action(/:id))(.:format)', :via => [:get, :post, :put, :destroy]
 end
