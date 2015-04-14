@@ -40,7 +40,11 @@ class TaskGroupsController < ApplicationController
   # POST /task_groups
   # POST /task_groups.xml
   def create
-    @task_group = TaskGroup.new(params[:task_group])
+    if Rails::VERSION::STRING < "4"
+      @task_group = TaskGroup.new(params[:task_group])
+    else
+      @task_group = TaskGroup.new(task_group_params)
+    end
 
     respond_to do |format|
       if @task_group.save
@@ -61,7 +65,12 @@ class TaskGroupsController < ApplicationController
     @task_group = TaskGroup.find(params[:id])
     params[:task_ids] ||= []
     respond_to do |format|
-      if @task_group.update_attributes(params[:task_group])
+      if Rails::VERSION::STRING < "4"
+        update_params = @task_group.update_attributes(params[:task_group])
+      else
+        update_params = @task_group.update_attributes(task_group_params)
+      end
+      if update_params
         ActiveRecord::Base.connection.execute("delete from task_group_to_tasks where task_group_id = #{@task_group.id}")
         @task_group.tasks = Task.from_task_ids(params[:task_ids])
         @task_group.save
@@ -83,6 +92,13 @@ class TaskGroupsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(task_groups_url) }
       format.xml  { head :ok }
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def task_group_params
+      params.require(:task_group).permit(:id, :name)
     end
   end
 end

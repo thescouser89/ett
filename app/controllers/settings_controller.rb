@@ -52,7 +52,11 @@ class SettingsController < ApplicationController
   # POST /settings
   # POST /settings.xml
   def create
-    @setting = Setting.new(params[:setting])
+    if Rails::VERSION::STRING < "4"
+      @setting = Setting.new(params[:setting])
+    else
+      @setting = Setting.new(setting_params)
+    end
 
     respond_to do |format|
       if @setting.save
@@ -93,7 +97,12 @@ class SettingsController < ApplicationController
     end
 
     respond_to do |format|
-      if @setting.update_attributes(params[:setting])
+      if Rails::VERSION::STRING < "4"
+        update_params = @setting.update_attributes(params[:setting])
+      else
+        update_params = @setting.update_attributes(setting_params)
+      end
+      if update_params
 
         format.html { redirect_to(@setting, :notice => 'Setting was successfully updated.') }
         format.xml { head :ok }
@@ -132,5 +141,16 @@ class SettingsController < ApplicationController
       end
     end
     flag
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def setting_params
+      params.require(:setting).permit(:id, :recipients, :props, :task_id,
+                                      :actions, :xattrs, :show_xattrs,
+                                      :enabled, :enable_xattrs, :default_tag,
+                                      :close_status_id, :use_bz_integration,
+                                      :use_jira_integration)
+    end
   end
 end

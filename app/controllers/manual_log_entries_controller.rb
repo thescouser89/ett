@@ -40,7 +40,12 @@ class ManualLogEntriesController < ApplicationController
   # POST /manual_log_entries
   # POST /manual_log_entries.xml
   def create
-    @manual_log_entry = ManualLogEntry.new(params[:manual_log_entry])
+    if Rails::VERSION::STRING < "4"
+      @manual_log_entry = ManualLogEntry.new(params[:manual_log_entry])
+    else
+      @manual_log_entry = ManualLogEntry.new(manual_log_entry_params)
+    end
+
 
     respond_to do |format|
       if @manual_log_entry.save
@@ -69,7 +74,12 @@ class ManualLogEntriesController < ApplicationController
     @manual_log_entry = ManualLogEntry.find(params[:id])
 
     respond_to do |format|
-      if @manual_log_entry.update_attributes(params[:manual_log_entry])
+      if Rails::VERSION::STRING < "4"
+        update_params = @manual_log_entry.update_attributes(params[:manual_log_entry])
+      else
+        update_params = @manual_log_entry.update_attributes(manual_log_entry_params)
+      end
+      if update_params
 
         format.html do
           redirect_to(@manual_log_entry,
@@ -95,6 +105,14 @@ class ManualLogEntriesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(manual_log_entries_url) }
       format.xml  { head :ok }
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def manual_log_entry_params
+      params.require(manual_log_entry).permit(:id, :who_id, :start_time,
+                                              :end_time, :package_id, :weekly_workload_id)
     end
   end
 end

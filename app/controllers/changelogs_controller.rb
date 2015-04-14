@@ -40,7 +40,11 @@ class ChangelogsController < ApplicationController
   # POST /changelogs
   # POST /changelogs.xml
   def create
-    @changelog = Changelog.new(params[:changelog])
+    if Rails::VERSION::STRING < "4"
+      @changelog = Changelog.new(params[:changelog])
+    else
+      @changelog = Changelog.new(changelog_params)
+    end
 
     respond_to do |format|
       if @changelog.save
@@ -72,7 +76,12 @@ class ChangelogsController < ApplicationController
     @changelog = Changelog.find(params[:id])
 
     respond_to do |format|
-      if @changelog.update_attributes(params[:changelog])
+      if Rails::VERSION::STRING < "4"
+        update_params = @changelog.update_attributes(params[:changelog])
+      else
+        update_params = @changelog.update_attributes(changelog_params)
+      end
+      if update_params
 
         format.html do
           redirect_to(@changelog,
@@ -99,6 +108,15 @@ class ChangelogsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(changelogs_url) }
       format.xml  { head :ok }
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def changelog_params
+      params.require(:changelog).permit(:package_id, :changed_by, :category,
+                                        :references, :from_value, :to_value,
+                                        :changed_at)
     end
   end
 end

@@ -42,7 +42,11 @@ class PAttachmentsController < ApplicationController
   # POST /p_attachments
   # POST /p_attachments.xml
   def create
-    @p_attachment = PAttachment.new(params[:p_attachment])
+    if Rails::VERSION::STRING < "4"
+      @p_attachment = PAttachment.new(params[:p_attachment])
+    else
+      @p_attachment = PAttachment.new(p_attachment_params)
+    end
     @p_attachment.created_by = current_user.id
     respond_to do |format|
       if @p_attachment.save
@@ -86,7 +90,12 @@ class PAttachmentsController < ApplicationController
     @p_attachment = PAttachment.find(params[:id])
 
     respond_to do |format|
-      if @p_attachment.update_attributes(params[:p_attachment])
+      if Rails::VERSION::STRING < "4"
+        update_params = @p_attachment.update_attributes(params[:p_attachment])
+      else
+        update_params = @p_attachment.update_attributes(p_attachment_params)
+      end
+      if update_params
         format.html do
           redirect_to(@p_attachment,
                       :notice => 'PAttachment was successfully updated.')
@@ -110,6 +119,15 @@ class PAttachmentsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(p_attachments_url) }
       format.xml { head :ok }
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def p_attachment_params
+      params.require(:p_attachment).permit(:id, :attachment_file_name,
+        :attachment_content_type, :attachment_file_size, :attachment_updated_at,
+        :package_id, :created_by)
     end
   end
 end

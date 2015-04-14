@@ -40,7 +40,12 @@ class WorkflowsController < ApplicationController
   # POST /workflows
   # POST /workflows.xml
   def create
-    @workflow = Workflow.new(params[:workflow])
+    if Rails::VERSION::STRING < "4"
+      @workflow = Workflow.new(params[:workflow])
+    else
+      @workflow = Workflow.new(workflow_params)
+    end
+
     # In WildBee we should save workflow and allowedStatus in one transaction.
     # Currently we have to save workflow to get its primary key
     if @workflow.save # just to get primary id.
@@ -68,7 +73,12 @@ class WorkflowsController < ApplicationController
 
     respond_to do |format|
       Workflow.transaction do
-        if @workflow.update_attributes(params[:workflow])
+        if Rails::VERSION::STRING < "4"
+          update_params = @workflow.update_attributes(params[:workflow])
+        else
+          update_params = @workflow.update_attributes(workflow_params)
+        end
+        if update_params
           update_workflow
 
           format.html do
@@ -100,5 +110,10 @@ class WorkflowsController < ApplicationController
     end
   end
 
-  protected
+  if Rails::VERSION::STRING > "3"
+    private
+    def workflow_params
+      params.require(:workflow).permit(:id, :name, :start_status_id)
+    end
+  end
 end

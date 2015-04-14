@@ -40,7 +40,11 @@ class CronjobModesController < ApplicationController
   # POST /cronjob_modes
   # POST /cronjob_modes.xml
   def create
-    @cronjob_mode = CronjobMode.new(params[:cronjob_mode])
+    if Rails::VERSION::STRING < "4"
+      @cronjob_mode = CronjobMode.new(params[:cronjob_mode])
+    else
+      @cronjob_mode = CronjobMode.new(cronjob_mode_params)
+    end
 
     respond_to do |format|
       if @cronjob_mode.save
@@ -59,7 +63,12 @@ class CronjobModesController < ApplicationController
     @cronjob_mode = CronjobMode.find(params[:id])
 
     respond_to do |format|
-      if @cronjob_mode.update_attributes(params[:cronjob_mode])
+      if Rails::VERSION::STRING < "4"
+        update_result = @cronjob_mode.update_attributes(params[:cronjob_mode])
+      else
+        update_result = @cronjob_mode.update_attributes(cronjob_mode_params)
+      end
+      if update_result
         format.html { redirect_to(@cronjob_mode, :notice => 'CronjobMode was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -121,5 +130,12 @@ class CronjobModesController < ApplicationController
     end
 
     render :json => response
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def cronjob_mode_params
+      params.require(:cronjob_mode).permit(:id, :mode, :description)
+    end
   end
 end

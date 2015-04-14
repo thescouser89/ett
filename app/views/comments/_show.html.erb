@@ -28,7 +28,7 @@
                   <%= submit_tag 'Delete' %>
               <% end %>
             <% else %>
-                <%= render 'comments/show_form_rails4' %>
+                <%= render 'comments/show_form_rails4', {:comment => comment} %>
             <% end %>
             </div>
         <% end %>

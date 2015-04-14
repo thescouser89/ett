@@ -72,7 +72,11 @@ class UsersController < ApplicationController
   # POST /users.xml
   def create
     params[:user][:email].downcase!
-    @user = User.new(params[:user])
+    if Rails::VERSION::STRING < "4"
+      @user = User.new(params[:user])
+    else
+      @user = User.new(user_params)
+    end
 
     respond_to do |format|
       if @user.save
@@ -99,10 +103,15 @@ class UsersController < ApplicationController
           @user.save
         end
 
+        if Rails::VERSION::STRING < "4"
+          user_attribute_params = params[:user]
+        else
+          user_attribute_params = user_params
+        end
         if validate_input_password(@user,
                                    params[:user][:password],
                                    params[:user][:confirm_password]) &&
-            @user.update_attributes(params[:user])
+            @user.update_attributes(user_attribute_params)
 
           flash[:notice] = 'User was successfully updated.'
           @user.reset_code = ''
@@ -149,6 +158,14 @@ class UsersController < ApplicationController
       end
     else # GET
       @user = User.new
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def user_params
+      params.require(:user).permit(:id, :name, :email, :can_manage, :tz_id,
+                                   :password, :bugzilla_email, :reset_code)
     end
   end
 end

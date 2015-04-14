@@ -40,7 +40,11 @@ class RelationshipsController < ApplicationController
   # POST /relationships
   # POST /relationships.xml
   def create
-    @relationship = Relationship.new(params[:relationship])
+    if Rails::VERSION::STRING < "4"
+      @relationship = Relationship.new(params[:relationship])
+    else
+      @relationship = Relationship.new(relationship_params)
+    end
 
     respond_to do |format|
       if @relationship.save
@@ -69,7 +73,13 @@ class RelationshipsController < ApplicationController
     @relationship = Relationship.find(params[:id])
 
     respond_to do |format|
-      if @relationship.update_attributes(params[:relationship])
+      if Rails::VERSION::STRING < "4"
+        update_params = @relationship.update_attributes(params[:relationship])
+      else
+        update_params = @relationship.update_attributes(relationship_params)
+      end
+
+      if update_params
 
         format.html do
           redirect_to(@relationship,
@@ -97,6 +107,14 @@ class RelationshipsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(relationships_url) }
       format.xml { head :ok }
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def relationship_params
+      params.require(:relationship).permit(:id, :from_name, :is_global, :task_id,
+                                           :to_name, :name)
     end
   end
 end

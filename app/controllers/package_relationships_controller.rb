@@ -40,7 +40,11 @@ class PackageRelationshipsController < ApplicationController
   # POST /package_relationships
   # POST /package_relationships.xml
   def create
-    @package_relationship = PackageRelationship.new(params[:package_relationship])
+    if Rails::VERSION::STRING < "4"
+      @package_relationship = PackageRelationship.new(params[:package_relationship])
+    else
+      @package_relationship = PackageRelationship.new(package_relationship_params)
+    end
 
     respond_to do |format|
       if @package_relationship.save
@@ -69,7 +73,12 @@ class PackageRelationshipsController < ApplicationController
     @package_relationship = PackageRelationship.find(params[:id])
 
     respond_to do |format|
-      if @package_relationship.update_attributes(params[:package_relationship])
+      if Rails::VERSION::STRING < "4"
+        update_params = @package_relationship.update_attributes(params[:package_relationship])
+      else
+        update_params = @package_relationship.update_attributes(package_relationship_params)
+      end
+      if update_params
         format.html do
           redirect_to(@package_relationship,
                       :notice => 'PackageRelationship was successfully updated.')
@@ -94,6 +103,13 @@ class PackageRelationshipsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(package_relationships_url) }
       format.xml { head :ok }
+    end
+  end
+  if Rails::VERSION::STRING > "3"
+    private
+    def package_relationship_params
+      params.require(:package_relationship).permit(:id, :from_package_id,
+                                                   :to_package_id, :relationship_id)
     end
   end
 end

@@ -78,7 +78,12 @@ class PackagesController < ApplicationController
   # POST /packages.xml
   def create
 
-    @package = Package.new(params[:package])
+    if Rails::VERSION::STRING < "4"
+      @package = Package.new(params[:package])
+    else
+      @package = Package.new(package_params)
+    end
+
     cleanup_pac_name!(@package.name)
 
     @package.created_by = current_user.id
@@ -156,7 +161,11 @@ class PackagesController < ApplicationController
         # will always be blank then.
         if shared_inline_bzs.blank?
           # this is when everything is saved
-          @package.update_attributes(params[:package])
+          if Rails::VERSION::STRING < "4"
+            @package.update_attributes(params[:package])
+          else
+            @package.update_attributes(package_params)
+          end
           @package.reload
           # this is needed since we write to @package later in this section of
           # the code. (@package.status_changed_at = Time.now). This messes up
@@ -784,6 +793,15 @@ class PackagesController < ApplicationController
   def deal_with_deprecated_brew_tag_id
     unless params[:brew_tag_id].blank?
       params[:task_id] = params[:brew_tag_id]
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def package_params
+      params.require(:package).permit(:name, :task_id, :status_id,
+                                      :ver, :git_url, :github_pr, :errata,
+                                      :user_id, :notes, :tags, :process_tags, :id)
     end
   end
 end

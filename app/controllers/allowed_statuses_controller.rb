@@ -40,7 +40,11 @@ class AllowedStatusesController < ApplicationController
   # POST /allowed_statuses
   # POST /allowed_statuses.xml
   def create
-    @allowed_status = AllowedStatus.new(params[:allowed_status])
+    if Rails::VERSION::STRING < "4"
+      @allowed_status = AllowedStatus.new(params[:allowed_status])
+    else
+      @allowed_status = AllowedStatus.new(allowed_statuses_params)
+    end
 
     respond_to do |format|
       if @allowed_status.save
@@ -72,7 +76,13 @@ class AllowedStatusesController < ApplicationController
     @allowed_status = AllowedStatus.find(params[:id])
 
     respond_to do |format|
-      if @allowed_status.update_attributes(params[:allowed_status])
+
+      if Rails::VERSION::STRING < "4"
+        update_result = @allowed_status.update_attributes(params[:allowed_status])
+      else
+        update_result = @allowed_status.update_attributes(allowed_statuses_params)
+      end
+      if update_result
         format.html { redirect_to(@allowed_status, :notice => 'AllowedStatus was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -95,5 +105,12 @@ class AllowedStatusesController < ApplicationController
       format.html { redirect_to(allowed_statuses_url) }
       format.xml  { head :ok }
     end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def allowed_statuses_params
+      params.require(:allowed_status).permit(:id, :workflow_id, :status_id,
+                                             :next_statuses, :next_status_id)
   end
 end

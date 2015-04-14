@@ -48,7 +48,11 @@ class ActionsController < ApplicationController
           @target_task = Task.new
           @target_task.name = target_task_name
 
-          @target_task.update_attributes(session[:clone_review][:task])
+          if Rails::VERSION::STRING < "4"
+            @target_task.update_attributes(session[:clone_review][:task])
+          else
+            @target_task.update_attributes(actions_params)
+          end
           @target_task.task_groups = session[:clone_review][:task_groups].map {|gp| TaskGroup.find(gp)} if session[:clone_review][:task_groups]
 
           @target_task.save
@@ -205,5 +209,20 @@ class ActionsController < ApplicationController
                           Task.find_by_name(unescape_url(params[:task_id])).id)
 
     redirect_to('/') if @package.user_id
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def actions_params
+      # wrap it around a Parameters object
+      # http://api.rubyonrails.org/classes/ActionController/Parameters.html#method-i-permit
+      params = ActionController::Parameters.new(session[:clone_review])
+      params.require(:task).permit(:id, :name, :description, :can_show,
+                                   :total_manual_track_time, :candidate_tag,
+                                   :target_release, :tag_version, :milestone,
+                                   :advisory, :workflow_id, :prod, :active,
+                                   :repository, :allow_non_existent_pkgs,
+                                   :allow_non_shipped_pkgs, :previous_version_tag,
+                                   :read_only_task)
   end
 end

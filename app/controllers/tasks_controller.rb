@@ -62,7 +62,12 @@ class TasksController < ApplicationController
   end
   def create
     if can_manage?
-      @task = Task.new(params[:task])
+      if Rails::VERSION::STRING < "4"
+        @task = Task.new(params[:task])
+      else
+        @task = Task.new(tasks_params)
+      end
+
       save_task_groups(@task, params)
       params[:task][:name].strip!
       params[:task][:name].downcase!
@@ -112,7 +117,13 @@ class TasksController < ApplicationController
 
     old_read_only_task = @task.read_only_task
     respond_to do |format|
-      if @task.update_attributes(params[:task]) && !os_adv_tag_error
+      if Rails::VERSION::STRING < "4"
+        update_result = @task.update_attributes(params[:task])
+      else
+        update_result = @task.update_attributes(tasks_params)
+      end
+
+      if update_result && !os_adv_tag_error
         expire_all_fragments
         flash_text = ''
         if !old_read_only_task && @task.read_only_task
@@ -313,6 +324,19 @@ class TasksController < ApplicationController
         (empty = false) unless col.blank?
       end
       empty
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def tasks_params
+      params.require(:task).permit(:id, :name, :description, :can_show,
+                                   :total_manual_track_time, :candidate_tag,
+                                   :target_release, :tag_version, :milestone,
+                                   :advisory, :workflow_id, :prod, :active,
+                                   :repository, :allow_non_existent_pkgs,
+                                   :allow_non_shipped_pkgs, :previous_version_tag,
+                                   :read_only_task)
     end
   end
 end

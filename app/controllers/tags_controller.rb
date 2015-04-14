@@ -40,7 +40,11 @@ class TagsController < ApplicationController
 
   def create
     expire_all_fragments
-    @tag = Tag.new(params[:tag])
+    if Rails::VERSION::STRING < "4"
+      @tag = Tag.new(params[:tags])
+    else
+      @tag = Tag.new(tags_params)
+    end
 
     respond_to do |format|
       if @tag.save
@@ -63,9 +67,15 @@ class TagsController < ApplicationController
     @tag = Tag.find(params[:id])
 
     respond_to do |format|
-      if @tag.update_attributes(params[:tag])
-        flash[:notice] = 'Tag was successfully updated.'
 
+      if Rails::VERSION::STRING < "4"
+        update_result = @tag.update_attributes(params[:tag])
+      else
+        update_result = @tag.update_attributes(tags_params)
+      end
+
+      if update_result
+        flash[:notice] = 'Tag was successfully updated.'
         format.html do
           redirect_to(:action => :show,
                       :id => @tag.id,
@@ -84,6 +94,13 @@ class TagsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(attributes_url) }
       format.xml { head :ok }
+    end
+  end
+
+  if Rails::VERSION::STRING > "3"
+    private
+    def tags_params
+      params.require(:tag).permit(:id, :key, :value, :task_id)
     end
   end
 end

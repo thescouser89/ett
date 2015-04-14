@@ -83,7 +83,11 @@ class StatusesController < ApplicationController
   # POST /statuses.xml
   def create
     expire_all_fragments
-    @status = Status.new(params[:status])
+    if Rails::VERSION::STRING < "4"
+      @status = Status.new(params[:status])
+    else
+      @status = Status.new(status_params)
+    end
 
     respond_to do |format|
       if @status.save
@@ -114,7 +118,12 @@ class StatusesController < ApplicationController
     @status = Status.find(params[:status][:id])
 
     respond_to do |format|
-      if @status.update_attributes(params[:status])
+      if Rails::VERSION::STRING < "4"
+        update_params = @status.update_attributes(params[:status])
+      else
+        update_params = @status.update_attributes(status_params)
+      end
+      if update_params
         flash[:notice] = 'Status was successfully updated.'
         format.html do
           if is_global?(@status)
@@ -146,4 +155,12 @@ class StatusesController < ApplicationController
     end
   end
 
+  if Rails::VERSION::STRING > "3"
+    private
+    def status_params
+      params.require(:status).permit(:id, :name, :task_id, :global, :can_select,
+                                     :can_show, :code, :style, :is_track_time,
+                                     :is_finish_state, :can_change_code)
+    end
+  end
 end

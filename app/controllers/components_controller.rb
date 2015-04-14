@@ -18,7 +18,11 @@ class ComponentsController < ApplicationController
 
   def create
     expire_all_fragments
-    @component = Component.new(params[:component])
+    if Rails::VERSION::STRING < "4"
+      @component = Component.new(params[:component])
+    else
+      @component = Component.new(component_params)
+    end
     @component.tasks = collect_tasks(params[:task_names])
 
     respond_to do |format|
@@ -38,7 +42,12 @@ class ComponentsController < ApplicationController
     expire_all_fragments
     @component = Component.find(params[:id])
     respond_to do |format|
-      if @component.update_attributes(params[:component])
+      if Rails::VERSION::STRING < "4"
+        update_result = @component.update_attributes(params[:component])
+      else
+        update_result = @component.update_attributes(component_params)
+      end
+      if update_result
         @component.tasks = collect_tasks(params[:task_names])
         @component.save
 
@@ -84,4 +93,10 @@ class ComponentsController < ApplicationController
     []
   end
 
+  if Rails::VERSION::STRING > "3"
+    private
+    def component_params
+      params.require(:component).permit(:id, :name)
+    end
+  end
 end
