@@ -4,7 +4,7 @@ class WeeklyWorkload < ActiveRecord::Base
              :foreign_key => 'weekly_workload_id', :dependent => :destroy,
              :order => 'user_id'
   else
-    has_many :package_stats, -> {order 'user_id'}, :class_name => 'PackageStat',
+    has_many :package_stats, lambda {order 'user_id'}, :class_name => 'PackageStat',
              :foreign_key => 'weekly_workload_id', :dependent => :destroy
   end
 

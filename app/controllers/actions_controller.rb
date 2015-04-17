@@ -224,5 +224,6 @@ class ActionsController < ApplicationController
                                    :repository, :allow_non_existent_pkgs,
                                    :allow_non_shipped_pkgs, :previous_version_tag,
                                    :read_only_task)
+    end
   end
 end

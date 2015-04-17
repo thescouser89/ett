@@ -112,5 +112,6 @@ class AllowedStatusesController < ApplicationController
     def allowed_statuses_params
       params.require(:allowed_status).permit(:id, :workflow_id, :status_id,
                                              :next_statuses, :next_status_id)
+    end
   end
 end
