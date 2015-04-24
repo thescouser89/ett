@@ -7,5 +7,9 @@
     <%= render :partial => 'layouts/sep' %>
     <h3>Notes</h3>
     <%= render :partial => 'layouts/line' %>
-    <%= Extractor.extract_url(@package.notes) %>
+    <% if Rails::VERSION::STRING < "4" %>
+    	<%= Extractor.extract_url(@package.notes) %>
+    <% else %>
+    	<%= h(Extractor.extract_url(@package.notes)).gsub("\n", "<br>").html_safe %>
+    <% end %>
 <% end %>

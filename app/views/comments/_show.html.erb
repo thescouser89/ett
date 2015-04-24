@@ -9,8 +9,11 @@
           <%= h comment.user.name %>
         </div>
         <span class="comment-date"><sup style="padding:2px;">&nbsp;</sup><%= at_zone(comment.created_at) %></span>
-
-        <p><span class="comment-body"><%= Extractor.extract_url(comment.comment) %></span></p>
+        <% if Rails::VERSION::STRING < "4" %>
+          <p><span class="comment-body"><%= Extractor.extract_url(comment.comment) %></span></p>
+        <% else %>
+          <p><span class="comment-body"><%= h(Extractor.extract_url(comment.comment)).gsub("\n", "<br>").html_safe %></span></p>
+        <% end %>
 
         <% if can_delete_comment?(comment) %>
             <div id='delete-comment-<%= comment.id %>' style='text-align:left;display:none;padding-bottom:3px;'>
