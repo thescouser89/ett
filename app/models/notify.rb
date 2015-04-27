@@ -79,10 +79,14 @@ class Notify
 
     recipients.each do |recipient|
       unless recipient.blank?
-        email = NotificationMailer.create_notify(recipient, subject, body)
-        Thread.new do
-          NotificationMailer.deliver(email)
-        end
+	if Rails::VERSION::STRING < "4"
+		email = NotificationMailer.create_notify(recipient, subject, body)
+		Thread.new do
+		  NotificationMailer.deliver(email)
+		end
+	else
+		NotificationMailer.notify(recipient, subject, body).deliver_now
+	end
       end
     end
   end

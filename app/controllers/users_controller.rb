@@ -151,8 +151,11 @@ class UsersController < ApplicationController
           return
         else
           @user.make_token
-          Thread.new { UserMailer.deliver_reset_password(@user) }
-
+	  if Rails::VERSION::STRING < "4"
+          	Thread.new { UserMailer.deliver_reset_password(@user) }
+	  else
+		Thread.new { UserMailer.reset_password(@user).deliver_now }
+	  end
           flash[:notice] = 'The password reset code has been sent to your email address.'
         end
       end
