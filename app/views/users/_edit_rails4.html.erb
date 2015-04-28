@@ -1,8 +1,4 @@
-<h2>Editing user</h2>
-
-<div class='manage-tbl'>
-  <% if Rails::VERSION::STRING < "4" %>
-    <% form_for(@user) do |f| %>
+    <%= form_for(@user) do |f| %>
         <%= f.error_messages %>
         <table>
           <%= render :partial => 'users/fields/name', :locals => {:f => f} %>
@@ -20,10 +16,3 @@
           </tr>
         </table>
     <% end %>
-  <% else %>
-    <%= render 'users/edit_rails4' %>
-  <% end %>
-</div>
-<br>
-
-<%= link_to 'Back', users_path %>
